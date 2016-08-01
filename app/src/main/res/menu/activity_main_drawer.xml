@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_camera"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Import" />
+        <item
+            android:id="@+id/nav_gallery"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Gallery" />
+
+
+    </group>
+
+    <item android:title="分类">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_dehaze_black_24dp"
+                android:title="人生感悟" />
+            <item
+                android:id="@+id/nav_send"
+                android:icon="@drawable/ic_dehaze_black_24dp"
+                android:title="好用工具" />
+
+            <item
+                android:id="@+id/nav_manage"
+                android:icon="@drawable/ic_dehaze_black_24dp"
+                android:title="IT开发" />
+
+        </menu>
+    </item>
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_background"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="切换主题" />
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_brightness_low_black_24dp"
+            android:title="setting" />
+
+
+    </group>
+
+</menu>
