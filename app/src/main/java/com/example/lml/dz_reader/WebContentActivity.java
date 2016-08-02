@@ -33,7 +33,7 @@ public class WebContentActivity extends AppCompatActivity {
         mWebView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
-                //get the newProgress and refresh progress bar
+
             }
 
         });
@@ -53,9 +53,9 @@ public class WebContentActivity extends AppCompatActivity {
         int itemId = item.getItemId();
 
         if (itemId == R.id.action_collect){
-            Toast.makeText(this,"收藏开始",Toast.LENGTH_LONG).show();
-        } if(itemId == R.id.action_addtion) {
             Toast.makeText(this,"添加开始",Toast.LENGTH_LONG).show();
+        } if(itemId == R.id.action_addtion) {
+            Toast.makeText(this,"收藏开始",Toast.LENGTH_LONG).show();
         }
 
         return super.onOptionsItemSelected(item);
