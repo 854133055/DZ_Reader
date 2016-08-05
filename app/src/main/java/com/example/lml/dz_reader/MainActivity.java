@@ -2,6 +2,8 @@ package com.example.lml.dz_reader;
 
 import android.Manifest;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -14,7 +16,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.ListView;
 import android.widget.Toast;
+
+import com.example.lml.dz_reader.Adapter.MySimpleCursorAdapter;
+import com.example.lml.dz_reader.db.ArticleDao;
+import com.example.lml.dz_reader.db.DaoMaster;
+import com.example.lml.dz_reader.db.DaoSession;
 
 import java.util.List;
 
@@ -33,6 +41,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     NavigationView navigationView;
     @BindView(R.id.drawer_layout)
     DrawerLayout drawer;
+    private Cursor cursor;
+    private SQLiteDatabase mdb;
+    private DaoMaster daoMaster;
+    private DaoSession daoSession;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-//        setSupportActionBar(toolbar);
         toolbar.inflateMenu(R.menu.main);
         toolbar.setTitle("最近");
 
@@ -64,18 +75,46 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             }
 
         });
-
-
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "ArticleTable.db", null);
+        mdb = helper.getWritableDatabase();
+        daoMaster = new DaoMaster(mdb);
+        daoSession = daoMaster.newSession();
+
+        cursor = mdb.query(getArticleDao().getTablename(), null, null, null, null, null, null);
+        int[] to = {R.id.tv_title,R.id.tv_content,R.id.tv_date,R.id.iv_1};
+
+        ListView listView = (ListView) findViewById(R.id.listView);
+        MySimpleCursorAdapter myAdapter = new MySimpleCursorAdapter(this, R.layout.layout_item, cursor, getFrom(), to);
+        listView.setAdapter(myAdapter);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    /*
-        easypermissions部分
+
+    /**
+     * 获得 Adapter的第四个from参数
+     * @return String[]
+     */
+    public String[] getFrom(){
+        String titleColumn = ArticleDao.Properties.Title.columnName;
+        String subTitleColumn = ArticleDao.Properties.Content.columnName;
+        String dateColumn = ArticleDao.Properties.Date.columnName;
+        String IconColumn = ArticleDao.Properties.Icon.columnName;
+        String[] from = {titleColumn,subTitleColumn,dateColumn,IconColumn};
+        return from;
+    }
+
+    public ArticleDao getArticleDao(){
+        return daoSession.getArticleDao();
+    }
+
+
+    /**
+     * easypermissions 部分
      */
     private static final int REQUEST_CODE_QRCODE_PERMISSIONS = 1;
 
