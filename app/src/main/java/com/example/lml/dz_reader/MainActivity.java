@@ -84,16 +84,19 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         mdb = helper.getWritableDatabase();
         daoMaster = new DaoMaster(mdb);
         daoSession = daoMaster.newSession();
-
-        cursor = mdb.query(getArticleDao().getTablename(), null, null, null, null, null, null);
-        int[] to = {R.id.tv_title,R.id.tv_content,R.id.tv_date,R.id.iv_1};
-
-        ListView listView = (ListView) findViewById(R.id.listView);
-        MySimpleCursorAdapter myAdapter = new MySimpleCursorAdapter(this, R.layout.layout_item, cursor, getFrom(), to);
-        listView.setAdapter(myAdapter);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        cursor = mdb.query(getArticleDao().getTablename(), null, null, null, null, null, null);
+        int[] to = {R.id.tv_title,R.id.tv_content,R.id.tv_date,R.id.iv_1};
+        MySimpleCursorAdapter myAdapter = new MySimpleCursorAdapter(this, R.layout.layout_item, cursor, getFrom(), to);
+        ListView listView = (ListView) findViewById(R.id.listView);
+        listView.setAdapter(myAdapter);
+    }
 
     /**
      * 获得 Adapter的第四个from参数
