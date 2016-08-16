@@ -6,8 +6,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -30,15 +32,18 @@ public class WebContentActivity extends AppCompatActivity {
     private WebView mWebView;
     private byte[] icon_byte;
     private String getTitle;
+    private String data;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_web_content);
 
         Intent intent = getIntent();
-        String data = intent.getStringExtra("url");
-
+        data = intent.getStringExtra("url");
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         initWebView(data);
     }
 
@@ -56,10 +61,11 @@ public class WebContentActivity extends AppCompatActivity {
             Intent intent = new Intent(this, DialogActivity.class);
             intent.putExtra("icon_byte[]", icon_byte);
             intent.putExtra("title", getTitle);
+            intent.putExtra("data",data);
             startActivity(intent);
             Toast.makeText(this,"添加开始",Toast.LENGTH_LONG).show();
         } if(itemId == R.id.action_addtion) {
-            Toast.makeText(this,"收藏开始",Toast.LENGTH_LONG).show();
+            toolbar.setVisibility(View.GONE);
         }
 
         return super.onOptionsItemSelected(item);
@@ -111,9 +117,4 @@ public class WebContentActivity extends AppCompatActivity {
 //            }
         mWebView.loadUrl(url);
     }
-
-
-
-
-
 }

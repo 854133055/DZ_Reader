@@ -16,10 +16,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.lml.dz_reader.Adapter.MySimpleCursorAdapter;
+import com.example.lml.dz_reader.db.Article;
 import com.example.lml.dz_reader.db.ArticleDao;
 import com.example.lml.dz_reader.db.DaoMaster;
 import com.example.lml.dz_reader.db.DaoSession;
@@ -32,7 +34,7 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks,NavigationView.OnNavigationItemSelectedListener{
-//
+
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.fab)
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private SQLiteDatabase mdb;
     private DaoMaster daoMaster;
     private DaoSession daoSession;
+    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +56,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        toolbar.inflateMenu(R.menu.main);
-        toolbar.setTitle("最近");
+        initToolbar();
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,26 +66,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             }
         });
 
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                int itemId = item.getItemId();
-                if (itemId == R.id.action_search) {
-                    Toast.makeText(MainActivity.this, "这是个搜索框", Toast.LENGTH_LONG).show();
-                }
-                return true;
-            }
 
-        });
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "ArticleTable.db", null);
-        mdb = helper.getWritableDatabase();
-        daoMaster = new DaoMaster(mdb);
-        daoSession = daoMaster.newSession();
+        initDateBase();
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -93,10 +82,64 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         super.onResume();
         cursor = mdb.query(getArticleDao().getTablename(), null, null, null, null, null, null);
         int[] to = {R.id.tv_title,R.id.tv_content,R.id.tv_date,R.id.iv_1};
+
         MySimpleCursorAdapter myAdapter = new MySimpleCursorAdapter(this, R.layout.layout_item, cursor, getFrom(), to);
-        ListView listView = (ListView) findViewById(R.id.listView);
+        listView = (ListView) findViewById(R.id.listView);
         listView.setAdapter(myAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                Toast.makeText(MainActivity.this, "点击了int = " + i + "long = " + l,Toast.LENGTH_LONG).show();
+                String url = daoSession.load(Article.class, l).getContent();
+                Intent intent = new Intent(MainActivity.this, YueWebView.class);
+                intent.putExtra("URL", url);
+                startActivity(intent);
+            }
+        });
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Toast.makeText(MainActivity.this, "您长摁了int = " + i + "long = " + l,Toast.LENGTH_LONG).show();
+                return false;
+            }
+        });
     }
+
+    private void initToolbar(){
+        toolbar.inflateMenu(R.menu.main);
+        toolbar.setTitle("最近");
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                int itemId = item.getItemId();
+                if (itemId == R.id.action_search) {
+                    Toast.makeText(MainActivity.this, "这是个搜索框", Toast.LENGTH_LONG).show();
+                }
+                return true;
+            }
+        });
+    }
+
+
+    private void initDateBase(){
+        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "ArticleTable.db", null);
+        mdb = helper.getWritableDatabase();
+        daoMaster = new DaoMaster(mdb);
+        daoSession = daoMaster.newSession();
+    }
+
+    private void setListViewTouch(){
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+            }
+        });
+    }
+
+
+
 
     /**
      * 获得 Adapter的第四个from参数

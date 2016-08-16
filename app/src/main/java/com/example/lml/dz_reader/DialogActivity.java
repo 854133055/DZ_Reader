@@ -35,6 +35,7 @@ public class DialogActivity extends AppCompatActivity {
     private DaoMaster daoMaster;
     private DaoSession daoSession;
     private byte[] icon_byte;
+    private String urlContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +45,7 @@ public class DialogActivity extends AppCompatActivity {
 
         String Webtitle = getIntent().getStringExtra("title");
         icon_byte = getIntent().getByteArrayExtra("icon_byte[]");
+        urlContent = getIntent().getStringExtra("data");
 
         setupDatabase();
         getArticleDao();
@@ -52,7 +54,13 @@ public class DialogActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 addArticle();
-
+                onBackPressed();
+            }
+        });
+        btn_Cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
             }
         });
         cursor = mdb.query(getArticleDao().getTablename(), null, null, null, null, null, null);
@@ -92,7 +100,7 @@ public class DialogActivity extends AppCompatActivity {
         SimpleDateFormat sdf = new SimpleDateFormat("hh:mm");
         String date = sdf.format(new Date());
 
-        Article article = new Article(null, articleTitleText, "", date, icon_byte);
+        Article article = new Article(null, articleTitleText, urlContent, date, icon_byte);
         getArticleDao().insert(article);
 
         Toast.makeText(this, "Inserted new note,ID:" + article.getId(), Toast.LENGTH_LONG).show();
@@ -100,4 +108,8 @@ public class DialogActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }

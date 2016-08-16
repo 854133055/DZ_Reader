@@ -89,6 +89,7 @@ public class QR_Activity extends AppCompatActivity implements QRCodeView.Delegat
                 Intent intent = new Intent(QR_Activity.this, WebContentActivity.class);
                 intent.putExtra("url", result);
                 startActivity(intent);
+                QR_Activity.this.finish();
                 vibrate();
                 mQRCodeView.startSpot();
         }
